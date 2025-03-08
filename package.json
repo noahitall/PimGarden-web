@@ -1,0 +1,15 @@
+{
+  "name": "pimgarden-web",
+  "version": "1.0.0",
+  "description": "Official website for PimGarden - a privacy-first contact manager",
+  "scripts": {
+    "dev": "vercel dev",
+    "start": "vercel dev"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "vercel": "^28.0.0"
+  },
+  "author": "noahitall",
+  "license": "MIT"
+} 
