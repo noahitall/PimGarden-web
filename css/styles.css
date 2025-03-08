@@ -108,7 +108,7 @@ nav {
 
 /* Hero Section */
 .hero {
-  padding: 5rem 0;
+  padding: 5rem 0 3rem;
   background-color: var(--light-background);
   text-align: center;
 }
@@ -711,7 +711,7 @@ footer {
 
 /* App Slideshow Styles */
 .app-slideshow {
-  padding: 4rem 0;
+  padding: 2rem 0 4rem;
   background-color: var(--light-background);
   text-align: center;
 }
