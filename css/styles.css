@@ -9,6 +9,21 @@
   --border-color: #dee2e6;
   --success-color: #51cf66;
   --font-main: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  --scroll-padding: 80px; /* For fixed header */
+}
+
+html {
+  scroll-behavior: smooth;
+  /* Add scroll padding for fixed header */
+  scroll-padding-top: var(--scroll-padding);
+}
+
+/* Fix for iOS Safari */
+@supports (-webkit-overflow-scrolling: touch) {
+  html {
+    /* Ensure smooth scrolling on iOS */
+    -webkit-overflow-scrolling: touch;
+  }
 }
 
 * {

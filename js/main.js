@@ -234,4 +234,35 @@ document.addEventListener('DOMContentLoaded', function() {
   setInterval(() => {
     plusSlides(1);
   }, 5000);
+  
+  // =====================
+  // Smooth Scrolling for iOS
+  // =====================
+  // Handle internal anchor links for iOS
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+  
+  if (isIOS) {
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function(e) {
+        e.preventDefault();
+        
+        const targetId = this.getAttribute('href').substring(1);
+        if (!targetId) return;
+        
+        const targetElement = document.getElementById(targetId);
+        if (!targetElement) return;
+        
+        // Calculate position considering fixed header
+        const headerOffset = 80; // Match with CSS var(--scroll-padding)
+        const elementPosition = targetElement.getBoundingClientRect().top;
+        const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+        
+        // Scroll to the element
+        window.scrollTo({
+          top: offsetPosition,
+          behavior: 'smooth'
+        });
+      });
+    });
+  }
 }); 
