@@ -707,4 +707,142 @@ footer {
   text-align: left;
   max-width: 100%;
   overflow-x: auto;
+}
+
+/* App Slideshow Styles */
+.app-slideshow {
+  padding: 4rem 0;
+  background-color: var(--light-background);
+  text-align: center;
+}
+
+.app-slideshow h2 {
+  margin-bottom: 2rem;
+  color: var(--secondary-color);
+}
+
+.slideshow-container {
+  position: relative;
+  max-width: 350px;
+  margin: 0 auto;
+}
+
+.slide {
+  display: none;
+  text-align: center;
+}
+
+.slide.active {
+  display: block;
+}
+
+.slide img {
+  border-radius: 12px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.slide-caption {
+  margin-top: 15px;
+  color: var(--secondary-color);
+  font-weight: 500;
+}
+
+.prev, .next {
+  cursor: pointer;
+  position: absolute;
+  top: 50%;
+  width: auto;
+  margin-top: -22px;
+  padding: 16px;
+  color: var(--primary-color);
+  font-weight: bold;
+  font-size: 18px;
+  transition: 0.6s ease;
+  border-radius: 0 3px 3px 0;
+  user-select: none;
+}
+
+.next {
+  right: 0;
+  border-radius: 3px 0 0 3px;
+}
+
+.prev {
+  left: 0;
+}
+
+.prev:hover, .next:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+.dots-container {
+  text-align: center;
+  padding: 20px 0;
+}
+
+.dot {
+  cursor: pointer;
+  height: 12px;
+  width: 12px;
+  margin: 0 5px;
+  background-color: var(--border-color);
+  border-radius: 50%;
+  display: inline-block;
+  transition: background-color 0.6s ease;
+}
+
+.active-dot, .dot:hover {
+  background-color: var(--primary-color);
+}
+
+.fade {
+  animation-name: fade;
+  animation-duration: 1.5s;
+}
+
+@keyframes fade {
+  from {opacity: .4}
+  to {opacity: 1}
+}
+
+/* NoScript Fallback for Slideshow */
+.screenshots-fallback {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
+  margin: 2rem 0;
+}
+
+.screenshot-item {
+  text-align: center;
+}
+
+.screenshot-item img {
+  border-radius: 12px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  max-width: 350px;
+  width: 100%;
+}
+
+@media (min-width: 992px) {
+  .screenshots-fallback {
+    flex-direction: row;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+}
+
+/* JavaScript Required Elements */
+.js-only {
+  display: block;
+}
+
+noscript .js-only {
+  display: none;
+}
+
+/* Make sure js is initialized properly */
+html.no-js .js-only {
+  display: none;
 } 

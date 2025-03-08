@@ -165,4 +165,73 @@ document.addEventListener('DOMContentLoaded', function() {
   if (copyrightElement && copyrightElement.textContent.includes('2023')) {
     copyrightElement.textContent = copyrightElement.textContent.replace('2023', currentYear);
   }
+  
+  // =====================
+  // Image Slideshow
+  // =====================
+  let slideIndex = 1;
+  showSlides(slideIndex);
+  
+  // Attach event listeners to the prev/next buttons
+  const prevButtons = document.querySelectorAll('.prev');
+  const nextButtons = document.querySelectorAll('.next');
+  const dots = document.querySelectorAll('.dot');
+  
+  prevButtons.forEach(button => {
+    button.addEventListener('click', () => {
+      plusSlides(-1);
+    });
+  });
+  
+  nextButtons.forEach(button => {
+    button.addEventListener('click', () => {
+      plusSlides(1);
+    });
+  });
+  
+  dots.forEach((dot, index) => {
+    dot.addEventListener('click', () => {
+      currentSlide(index + 1);
+    });
+  });
+  
+  // Add functions to window object to make them available for onclick handlers
+  window.plusSlides = plusSlides;
+  window.currentSlide = currentSlide;
+  window.showSlides = showSlides;
+  
+  function plusSlides(n) {
+    showSlides(slideIndex += n);
+  }
+  
+  function currentSlide(n) {
+    showSlides(slideIndex = n);
+  }
+  
+  function showSlides(n) {
+    let i;
+    const slides = document.querySelectorAll('.slide');
+    const dots = document.querySelectorAll('.dot');
+    
+    if (!slides.length) return; // No slides found
+    
+    if (n > slides.length) {slideIndex = 1}
+    if (n < 1) {slideIndex = slides.length}
+    
+    for (i = 0; i < slides.length; i++) {
+      slides[i].style.display = "none";
+    }
+    
+    for (i = 0; i < dots.length; i++) {
+      dots[i].className = dots[i].className.replace(" active-dot", "");
+    }
+    
+    slides[slideIndex-1].style.display = "block";
+    dots[slideIndex-1].className += " active-dot";
+  }
+  
+  // Auto-advance slides every 5 seconds
+  setInterval(() => {
+    plusSlides(1);
+  }, 5000);
 }); 

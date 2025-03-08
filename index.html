@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="no-js">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,6 +11,10 @@
   <meta property="og:description" content="Manage your contacts completely offline. Your data never leaves your device.">
   <meta property="og:image" content="public/images/og-image.png">
   <meta property="og:url" content="https://pimgarden.com">
+  <script>
+    // Immediately mark that JavaScript is available
+    document.documentElement.className = document.documentElement.className.replace('no-js', 'js');
+  </script>
 </head>
 <body>
   <header>
@@ -48,6 +52,59 @@
           <img src="public/images/app-screenshot.png" alt="PimGarden App Screenshot">
         </div>
       </div>
+    </section>
+
+    <section class="app-slideshow">
+      <div class="container">
+        <h2>See PimGarden in Action</h2>
+        <div class="slideshow-container js-only">
+          <div class="slide fade" style="display: block;">
+            <img src="public/images/card-list.png" alt="PimGarden Contact List View" style="width:100%; max-width:350px;">
+            <div class="slide-caption">Organize your contacts efficiently</div>
+          </div>
+          
+          <div class="slide fade">
+            <img src="public/images/import-contacts.png" alt="PimGarden Import Contacts View" style="width:100%; max-width:350px;">
+            <div class="slide-caption">Easily import your existing contacts</div>
+          </div>
+          
+          <div class="slide fade">
+            <img src="public/images/interactions.png" alt="PimGarden Interaction Types View" style="width:100%; max-width:350px;">
+            <div class="slide-caption">Track and customize interaction types</div>
+          </div>
+          
+          <a class="prev" onclick="plusSlides(-1)">&#10094;</a>
+          <a class="next" onclick="plusSlides(1)">&#10095;</a>
+        </div>
+        
+        <div class="dots-container js-only" style="text-align:center">
+          <span class="dot active-dot" onclick="currentSlide(1)"></span>
+          <span class="dot" onclick="currentSlide(2)"></span>
+          <span class="dot" onclick="currentSlide(3)"></span>
+        </div>
+      </div>
+      
+      <noscript>
+        <div class="container">
+          <div class="screenshots-fallback">
+            <div class="screenshot-item">
+              <img src="public/images/card-list.png" alt="PimGarden Contact List View" style="width:100%; max-width:350px;">
+              <div class="slide-caption">Organize your contacts efficiently</div>
+            </div>
+            
+            <div class="screenshot-item">
+              <img src="public/images/import-contacts.png" alt="PimGarden Import Contacts View" style="width:100%; max-width:350px;">
+              <div class="slide-caption">Easily import your existing contacts</div>
+            </div>
+            
+            <div class="screenshot-item">
+              <img src="public/images/interactions.png" alt="PimGarden Interaction Types View" style="width:100%; max-width:350px;">
+              <div class="slide-caption">Track and customize interaction types</div>
+            </div>
+          </div>
+          <p class="noscript-note">Note: JavaScript is disabled, so all screenshots are shown at once.</p>
+        </div>
+      </noscript>
     </section>
 
     <section id="features" class="features">
