@@ -1,11 +1,25 @@
 // Vercel serverless function for email subscription
 import { createClient } from '@supabase/supabase-js';
 
-// Create a supabase client for the API
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY
-);
+// Create a supabase client for the API - with error handling
+let supabase = null;
+try {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  
+  // Check if environment variables are properly set
+  if (!supabaseUrl || !supabaseKey || 
+      supabaseUrl.includes('${NEXT_PUBLIC_SUPABASE_URL}') || 
+      supabaseKey.includes('${SUPABASE_SERVICE_ROLE_KEY}')) {
+    console.error('Supabase environment variables not properly configured');
+    // We'll handle this in the request handler
+  } else {
+    supabase = createClient(supabaseUrl, supabaseKey);
+  }
+} catch (error) {
+  console.error('Error initializing Supabase client:', error);
+  // We'll handle this in the request handler
+}
 
 export default async function handler(req, res) {
   // Enable CORS
@@ -45,7 +59,18 @@ export default async function handler(req, res) {
     // Log the email (for debugging purposes)
     console.log(`New subscriber: ${email}`);
     
-    // Store in Supabase
+    // Check if Supabase is properly initialized
+    if (!supabase) {
+      // For now, just log this to the console and return a success
+      // This allows testing the frontend without Supabase
+      console.log('Supabase not initialized, but received email:', email);
+      return res.status(200).json({ 
+        success: true, 
+        message: 'Email received (Supabase integration pending)' 
+      });
+    }
+    
+    // Store in Supabase if initialized
     const { error } = await supabase
       .from('subscribers')
       .insert([

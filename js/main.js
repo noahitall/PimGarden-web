@@ -6,12 +6,19 @@ document.addEventListener('DOMContentLoaded', function() {
   const urlParams = new URLSearchParams(window.location.search);
   const successParam = urlParams.get('success');
   const errorParam = urlParams.get('error');
+  const noteParam = urlParams.get('note');
   
   if (successParam) {
     let message = 'Thanks for subscribing! We\'ll keep you updated on PimGarden news.';
     if (successParam === 'already-subscribed') {
       message = 'You\'re already subscribed to our updates!';
     }
+    
+    // Handle special case for when environment variables aren't set
+    if (noteParam === 'env-pending') {
+      message += ' (Setup in progress - your email has been logged but storage is pending)';
+    }
+    
     showMessage(message, 'success');
   } else if (errorParam) {
     let message = 'Sorry, something went wrong. Please try again later.';
@@ -40,6 +47,7 @@ document.addEventListener('DOMContentLoaded', function() {
       const url = new URL(window.location);
       url.searchParams.delete('success');
       url.searchParams.delete('error');
+      url.searchParams.delete('note');
       window.history.replaceState({}, document.title, url);
     };
     messageElement.appendChild(closeButton);
