@@ -13,11 +13,5 @@
     { "src": "/api/subscribe-db", "dest": "/api/subscribe-db.js" },
     { "src": "/api/(.*)", "dest": "/api/$1" },
     { "src": "/(.*)", "dest": "/$1" }
-  ],
-  "env": {
-    "SENDGRID_API_KEY": "${SENDGRID_API_KEY}",
-    "NEXT_PUBLIC_SUPABASE_URL": "${NEXT_PUBLIC_SUPABASE_URL}",
-    "SUPABASE_SERVICE_ROLE_KEY": "${SUPABASE_SERVICE_ROLE_KEY}",
-    "TARGET_EMAIL": "contact@pimgarden.com"
-  }
+  ]
 } 

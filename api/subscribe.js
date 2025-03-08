@@ -89,11 +89,15 @@ export default async function handler(req, res) {
     if (!supabase) {
       console.log(`Supabase not initialized: ${initError || 'Unknown reason'}`);
       
-      // For now, just log this to the console and return a success
+      // Return a more helpful message for fixing the environment variables
       return res.status(200).json({ 
         success: true, 
         message: 'Email received (Supabase integration pending)',
-        debug: { error: initError, email: email }
+        debug: { 
+          error: initError, 
+          email: email,
+          help: 'Please set NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY in your Vercel dashboard under Project Settings → Environment Variables. Do not use ${} syntax.'
+        }
       });
     }
     
