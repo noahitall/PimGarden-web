@@ -1,4 +1,6 @@
-// Vercel serverless function for email subscription
+// Vercel serverless function for email subscription with database storage
+import supabase from '../utils/supabase';
+
 export default async function handler(req, res) {
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
@@ -25,30 +27,39 @@ export default async function handler(req, res) {
       });
     }
     
-    // Log the email (for debugging purposes)
-    console.log(`New subscriber: ${email}`);
+    // Store email in Supabase
+    const { data, error } = await supabase
+      .from('subscribers')
+      .insert([
+        { 
+          email,
+          subscribed_at: new Date().toISOString(),
+          source: 'website'
+        }
+      ]);
     
-    // Send an email to yourself with this new subscriber
-    const targetEmail = process.env.TARGET_EMAIL || 'contact@pimgarden.com';
+    if (error) {
+      // Check if it's a duplicate email error
+      if (error.code === '23505') {
+        return res.status(400).json({ 
+          success: false, 
+          error: 'You are already subscribed!' 
+        });
+      }
+      
+      console.error('Database error:', error);
+      return res.status(500).json({ 
+        success: false, 
+        error: 'An error occurred while storing your subscription' 
+      });
+    }
     
+    // Optionally, still send an email notification
     try {
-      // Import SendGrid (using ES modules syntax for Vercel)
-      const sgMail = require('@sendgrid/mail');
-      sgMail.setApiKey(process.env.SENDGRID_API_KEY);
-      
-      const msg = {
-        to: targetEmail,
-        from: 'noreply@pimgarden.com',
-        subject: 'New PimGarden Subscriber',
-        text: `New subscriber: ${email}`,
-        html: `<p>You have a new subscriber to the PimGarden newsletter:</p><p><strong>${email}</strong></p>`,
-      };
-      
-      await sgMail.send(msg);
-      console.log(`Email notification sent to ${targetEmail}`);
+      // SendGrid code from the other handler could go here
     } catch (emailError) {
       console.error('Error sending notification email:', emailError);
-      // Still return success even if notification fails
+      // Continue anyway - we stored the email in the database
     }
     
     // Return success response
