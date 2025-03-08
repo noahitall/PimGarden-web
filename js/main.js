@@ -1,12 +1,69 @@
 // Main JavaScript for PimGarden website
 document.addEventListener('DOMContentLoaded', function() {
   // =====================
+  // Check URL parameters for form submission results
+  // =====================
+  const urlParams = new URLSearchParams(window.location.search);
+  const successParam = urlParams.get('success');
+  const errorParam = urlParams.get('error');
+  
+  if (successParam) {
+    let message = 'Thanks for subscribing! We\'ll keep you updated on PimGarden news.';
+    if (successParam === 'already-subscribed') {
+      message = 'You\'re already subscribed to our updates!';
+    }
+    showMessage(message, 'success');
+  } else if (errorParam) {
+    let message = 'Sorry, something went wrong. Please try again later.';
+    if (errorParam === 'invalid-email') {
+      message = 'Please enter a valid email address.';
+    } else if (errorParam === 'database') {
+      message = 'There was an issue saving your email. Please try again later.';
+    }
+    showMessage(message, 'error');
+  }
+  
+  // Function to show messages
+  function showMessage(message, type) {
+    // Create message element
+    const messageElement = document.createElement('div');
+    messageElement.className = `message ${type}`;
+    messageElement.textContent = message;
+    
+    // Add close button
+    const closeButton = document.createElement('button');
+    closeButton.className = 'close-message';
+    closeButton.innerHTML = '&times;';
+    closeButton.onclick = function() {
+      messageElement.remove();
+      // Clean up URL parameters
+      const url = new URL(window.location);
+      url.searchParams.delete('success');
+      url.searchParams.delete('error');
+      window.history.replaceState({}, document.title, url);
+    };
+    messageElement.appendChild(closeButton);
+    
+    // Add to page
+    document.body.insertBefore(messageElement, document.body.firstChild);
+    
+    // Auto-hide after 5 seconds
+    setTimeout(() => {
+      if (document.body.contains(messageElement)) {
+        messageElement.remove();
+      }
+    }, 5000);
+  }
+
+  // =====================
   // Email Subscription Form
   // =====================
   const subscribeForm = document.getElementById('subscribe-form');
   
   if (subscribeForm) {
     subscribeForm.addEventListener('submit', async function(e) {
+      // Only prevent default if JavaScript is enabled
+      // This allows the form to submit normally when JS is disabled
       e.preventDefault();
       
       const emailInput = document.getElementById('email');
@@ -14,7 +71,7 @@ document.addEventListener('DOMContentLoaded', function() {
       
       // Simple validation
       if (!email || !email.includes('@')) {
-        alert('Please enter a valid email address.');
+        showMessage('Please enter a valid email address.', 'error');
         return;
       }
       
@@ -41,13 +98,13 @@ document.addEventListener('DOMContentLoaded', function() {
         // Handle response
         if (data.success) {
           emailInput.value = '';
-          alert('Thanks for subscribing! We\'ll keep you updated on PimGarden news.');
+          showMessage('Thanks for subscribing! We\'ll keep you updated on PimGarden news.', 'success');
         } else {
-          alert(`Error: ${data.error || 'Something went wrong'}`);
+          showMessage(`Error: ${data.error || 'Something went wrong'}`, 'error');
         }
       } catch (error) {
         console.error('Subscription error:', error);
-        alert('Sorry, something went wrong. Please try again later.');
+        showMessage('Sorry, something went wrong. Please try again later.', 'error');
       }
     });
   }
