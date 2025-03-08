@@ -7,6 +7,7 @@ document.addEventListener('DOMContentLoaded', function() {
   const successParam = urlParams.get('success');
   const errorParam = urlParams.get('error');
   const noteParam = urlParams.get('note');
+  const debugParam = urlParams.get('debug');
   
   if (successParam) {
     let message = 'Thanks for subscribing! We\'ll keep you updated on PimGarden news.';
@@ -17,6 +18,12 @@ document.addEventListener('DOMContentLoaded', function() {
     // Handle special case for when environment variables aren't set
     if (noteParam === 'env-pending') {
       message += ' (Setup in progress - your email has been logged but storage is pending)';
+      
+      // Add debug info for site admin
+      if (debugParam) {
+        console.log('Subscription debug info:', debugParam);
+        message += '\n\nDebug info: ' + debugParam;
+      }
     }
     
     showMessage(message, 'success');
@@ -27,6 +34,13 @@ document.addEventListener('DOMContentLoaded', function() {
     } else if (errorParam === 'database') {
       message = 'There was an issue saving your email. Please try again later.';
     }
+    
+    // Add debug info for site admin
+    if (debugParam) {
+      console.log('Error debug info:', debugParam);
+      message += '\n\nDebug info: ' + debugParam;
+    }
+    
     showMessage(message, 'error');
   }
   
@@ -35,7 +49,25 @@ document.addEventListener('DOMContentLoaded', function() {
     // Create message element
     const messageElement = document.createElement('div');
     messageElement.className = `message ${type}`;
-    messageElement.textContent = message;
+    
+    // Format message text (handle newlines for debug info)
+    if (message.includes('\n')) {
+      const parts = message.split('\n\n');
+      // Main message
+      const mainMessage = document.createElement('div');
+      mainMessage.textContent = parts[0];
+      messageElement.appendChild(mainMessage);
+      
+      // Debug info in smaller text
+      if (parts.length > 1) {
+        const debugInfo = document.createElement('div');
+        debugInfo.className = 'debug-info';
+        debugInfo.textContent = parts[1];
+        messageElement.appendChild(debugInfo);
+      }
+    } else {
+      messageElement.textContent = message;
+    }
     
     // Add close button
     const closeButton = document.createElement('button');
@@ -48,6 +80,7 @@ document.addEventListener('DOMContentLoaded', function() {
       url.searchParams.delete('success');
       url.searchParams.delete('error');
       url.searchParams.delete('note');
+      url.searchParams.delete('debug');
       window.history.replaceState({}, document.title, url);
     };
     messageElement.appendChild(closeButton);
@@ -55,12 +88,12 @@ document.addEventListener('DOMContentLoaded', function() {
     // Add to page
     document.body.insertBefore(messageElement, document.body.firstChild);
     
-    // Auto-hide after 5 seconds
+    // Auto-hide after 10 seconds (longer for debug messages)
     setTimeout(() => {
       if (document.body.contains(messageElement)) {
         messageElement.remove();
       }
-    }, 5000);
+    }, message.includes('Debug info') ? 30000 : 5000);
   }
 
   // =====================

@@ -1,24 +1,50 @@
 // Vercel serverless function for email subscription
 import { createClient } from '@supabase/supabase-js';
 
-// Create a supabase client for the API - with error handling
+// Create a supabase client for the API - with better debugging
 let supabase = null;
+let initError = null;
+
 try {
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  // Log available environment variables (sanitized)
+  const envVars = Object.keys(process.env)
+    .filter(key => key.includes('SUPABASE') || key.includes('NEXT_PUBLIC'))
+    .reduce((obj, key) => {
+      // Show the first few characters of each value for debugging
+      const value = process.env[key];
+      obj[key] = value ? `${value.substring(0, 6)}...` : 'undefined';
+      return obj;
+    }, {});
   
-  // Check if environment variables are properly set
-  if (!supabaseUrl || !supabaseKey || 
-      supabaseUrl.includes('${NEXT_PUBLIC_SUPABASE_URL}') || 
-      supabaseKey.includes('${SUPABASE_SERVICE_ROLE_KEY}')) {
-    console.error('Supabase environment variables not properly configured');
-    // We'll handle this in the request handler
+  console.log('Available environment variables:', envVars);
+  
+  // Try to get Supabase URL and key from different possible sources
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 
+                      process.env.SUPABASE_URL ||
+                      process.env.NEXT_PUBLIC_SUPABASE_PROJECT_URL;
+                      
+  const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY ||
+                      process.env.SUPABASE_KEY ||
+                      process.env.SERVICE_ROLE_KEY ||
+                      process.env.SUPABASE_SERVICE_KEY;
+  
+  console.log('Attempting to use Supabase URL:', supabaseUrl ? `${supabaseUrl.substring(0, 15)}...` : 'undefined');
+  console.log('Supabase Key exists:', !!supabaseKey);
+  
+  if (!supabaseUrl || !supabaseKey) {
+    initError = 'Missing Supabase URL or key';
+    console.error(initError);
+  } else if (supabaseUrl.includes('${') || supabaseKey.includes('${')) {
+    initError = 'Supabase env vars contain template literals';
+    console.error(initError);
   } else {
+    console.log('Creating Supabase client...');
     supabase = createClient(supabaseUrl, supabaseKey);
+    console.log('Supabase client created successfully');
   }
 } catch (error) {
-  console.error('Error initializing Supabase client:', error);
-  // We'll handle this in the request handler
+  initError = `Error initializing Supabase: ${error.message}`;
+  console.error(initError);
 }
 
 export default async function handler(req, res) {
@@ -61,16 +87,18 @@ export default async function handler(req, res) {
     
     // Check if Supabase is properly initialized
     if (!supabase) {
+      console.log(`Supabase not initialized: ${initError || 'Unknown reason'}`);
+      
       // For now, just log this to the console and return a success
-      // This allows testing the frontend without Supabase
-      console.log('Supabase not initialized, but received email:', email);
       return res.status(200).json({ 
         success: true, 
-        message: 'Email received (Supabase integration pending)' 
+        message: 'Email received (Supabase integration pending)',
+        debug: { error: initError, email: email }
       });
     }
     
     // Store in Supabase if initialized
+    console.log('Attempting to insert email into Supabase...');
     const { error } = await supabase
       .from('subscribers')
       .insert([
@@ -92,10 +120,12 @@ export default async function handler(req, res) {
       console.error('Database error:', error);
       return res.status(500).json({ 
         success: false, 
-        error: 'An error occurred while storing your subscription' 
+        error: 'An error occurred while storing your subscription',
+        debug: { dbError: error }
       });
     }
     
+    console.log('Email successfully added to Supabase');
     // Return success response
     return res.status(200).json({ 
       success: true, 
@@ -105,7 +135,8 @@ export default async function handler(req, res) {
     console.error('Subscription error:', error);
     return res.status(500).json({ 
       success: false, 
-      error: 'An error occurred while processing your subscription' 
+      error: 'An error occurred while processing your subscription',
+      debug: { error: error.message }
     });
   }
 } 
