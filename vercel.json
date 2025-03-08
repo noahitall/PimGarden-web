@@ -12,6 +12,7 @@
     { "src": "/(.*)", "dest": "/$1" }
   ],
   "env": {
-    "TARGET_EMAIL": "contact@pimgarden.app"
+    "SENDGRID_API_KEY": "${SENDGRID_API_KEY}",
+    "TARGET_EMAIL": "contact@pimgarden.com"
   }
 } 

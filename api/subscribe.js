@@ -36,7 +36,7 @@ export default async function handler(req, res) {
     // Example code for sending an email (requires configuration)
     // This uses the free SendGrid service
     // You would need to set up environment variables in Vercel
-    const targetEmail = process.env.TARGET_EMAIL || 'contact@pimgarden.app';
+    const targetEmail = process.env.TARGET_EMAIL || 'contact@pimgarden.com';
     
     // Here you can use any email sending library
     // For example with nodemailer or using a direct API call
@@ -56,7 +56,7 @@ export default async function handler(req, res) {
       
       const msg = {
         to: targetEmail,
-        from: 'noreply@pimgarden.app',
+        from: 'noreply@pimgarden.com',
         subject: 'New PimGarden Subscriber',
         text: `New subscriber: ${email}`,
         html: `<p>You have a new subscriber to the PimGarden newsletter:</p><p><strong>${email}</strong></p>`,
