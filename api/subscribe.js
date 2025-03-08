@@ -1,8 +1,25 @@
 // Vercel serverless function for email subscription
+import { createClient } from '@supabase/supabase-js';
+
+// Create a supabase client for the API
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL,
+  process.env.SUPABASE_SERVICE_ROLE_KEY
+);
+
 export default async function handler(req, res) {
+  // Enable CORS
+  res.setHeader('Access-Control-Allow-Credentials', true);
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
+  res.setHeader(
+    'Access-Control-Allow-Headers',
+    'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
+  );
+
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
-    return res.status(200).end();
+    return res.status(200).json({});
   }
   
   // Only allow POST requests
@@ -28,27 +45,30 @@ export default async function handler(req, res) {
     // Log the email (for debugging purposes)
     console.log(`New subscriber: ${email}`);
     
-    // Send an email to yourself with this new subscriber
-    const targetEmail = process.env.TARGET_EMAIL || 'contact@pimgarden.com';
-    
-    try {
-      // Import SendGrid (using ES modules syntax for Vercel)
-      const sgMail = require('@sendgrid/mail');
-      sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+    // Store in Supabase
+    const { error } = await supabase
+      .from('subscribers')
+      .insert([
+        { 
+          email,
+          source: 'website-js'
+        }
+      ]);
       
-      const msg = {
-        to: targetEmail,
-        from: 'noreply@pimgarden.com',
-        subject: 'New PimGarden Subscriber',
-        text: `New subscriber: ${email}`,
-        html: `<p>You have a new subscriber to the PimGarden newsletter:</p><p><strong>${email}</strong></p>`,
-      };
+    if (error) {
+      // Check if it's a duplicate email
+      if (error.code === '23505') {
+        return res.status(400).json({ 
+          success: false, 
+          error: 'You are already subscribed!' 
+        });
+      }
       
-      await sgMail.send(msg);
-      console.log(`Email notification sent to ${targetEmail}`);
-    } catch (emailError) {
-      console.error('Error sending notification email:', emailError);
-      // Still return success even if notification fails
+      console.error('Database error:', error);
+      return res.status(500).json({ 
+        success: false, 
+        error: 'An error occurred while storing your subscription' 
+      });
     }
     
     // Return success response

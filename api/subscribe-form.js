@@ -1,6 +1,5 @@
 // Server-side handler for HTML form submissions (no JavaScript required)
 import { createClient } from '@supabase/supabase-js';
-import parseForm from '../middleware/form-parser';
 
 // Create a supabase client
 const supabase = createClient(
@@ -8,25 +7,30 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY
 );
 
-// Disable built-in body parser
-export const config = {
-  api: {
-    bodyParser: false,
-  },
-};
-
+// Handle form data
 export default async function handler(req, res) {
+  // Enable CORS
+  res.setHeader('Access-Control-Allow-Credentials', true);
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
+  res.setHeader(
+    'Access-Control-Allow-Headers',
+    'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
+  );
+
+  // Handle CORS preflight requests
+  if (req.method === 'OPTIONS') {
+    return res.status(200).json({});
+  }
+
   // Only handle POST requests
   if (req.method !== 'POST') {
     return res.redirect('/?error=method');
   }
 
   try {
-    // Parse the form data
-    await parseForm(req, res);
-    
-    // Get the email from form data
-    const email = req.body.email;
+    // With Vercel, urlencoded form data should be accessible in req.body
+    const email = req.body?.email;
     
     // Basic validation
     if (!email || !/^\S+@\S+\.\S+$/.test(email)) {

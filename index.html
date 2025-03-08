@@ -151,7 +151,7 @@
       <div class="container">
         <h2>Be First to Know When We Launch</h2>
         <p>Join our waitlist to get early access and exclusive updates.</p>
-        <form id="subscribe-form" method="POST" action="/api/subscribe-form" novalidate>
+        <form id="subscribe-form" method="POST" action="/api/subscribe-form" enctype="application/x-www-form-urlencoded" novalidate>
           <div class="form-group">
             <input type="email" id="email" name="email" placeholder="Your email address" required>
             <button type="submit" class="button primary">Join Waitlist</button>
