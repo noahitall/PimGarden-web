@@ -374,11 +374,18 @@ nav {
 }
 
 .content-block p, .content-block ul {
-  margin-bottom: 1rem;
+  margin-bottom: 1.5rem;
 }
 
 .content-block ul {
   padding-left: 2rem;
+}
+
+.last-updated {
+  font-style: italic;
+  color: #6c757d;
+  font-size: 0.9rem;
+  margin-bottom: 1.5rem;
 }
 
 /* Footer */
