@@ -867,4 +867,32 @@ noscript .js-only {
 /* Make sure js is initialized properly */
 html.no-js .js-only {
   display: none;
+}
+
+/* Feature List Styling */
+.feature-list {
+  margin: 1.5rem 0;
+  padding-left: 1.5rem;
+}
+
+.feature-list li {
+  margin-bottom: 1rem;
+  position: relative;
+  list-style-type: none;
+  padding-left: 0.5rem;
+}
+
+.feature-list li::before {
+  content: "•";
+  color: var(--primary-color);
+  font-weight: bold;
+  display: inline-block;
+  width: 1.5rem;
+  margin-left: -1.5rem;
+  font-size: 1.2rem;
+}
+
+.feature-list li strong {
+  color: var(--primary-color);
+  font-weight: 600;
 } 
